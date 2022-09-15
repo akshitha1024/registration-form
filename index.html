@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <link rel="stylesheet" href="form.css">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />  
+    <title>  Registration form </title> 
+    <style>
+        input#name:invalid:focus{
+            border: 1px solid red;
+        }
+        input#email:invalid:focus{
+            border: 1px solid red;
+        }
+        input#password:invalid:focus{
+            border: 1px solid red;
+        }
+        input#dob:invalid:focus{
+            border: 1px solid red;
+        }
+    </style>
+</head> 
+<body bgcolor="white">
+    <h1 align="center" class="head">WEB DEVELOPMENT 101</h1>
+    <br />
+    <h1 align="center">REGISTRATION FORM</h1>
+    <div class="division">
+        <form class="form" id="form">
+            <table class="tabledata" cellspacing="25px">
+            <tr>
+                <td>
+                    <label for="name">
+                        Name:
+                    </label>
+                </td>
+                <td><input class="input" required type="text" id="name" name="name" placeholder="full name" size="20"/>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="email">
+                        Email:
+                    </label>
+                </td>
+                <td><input class="input" required type="email" id="email" name="email" placeholder="email" size="20" />
+                </td>
+            </tr>
+            <tr>
+                <td><label for="password">
+                    Password:
+                </label>
+                </td>
+                <td><input class="input" required type="password" id="password" name="password" placeholder="password" size="20"/>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="dob">
+                    Date of Birth:
+                </label>
+                </td>
+                <td><input style="width: 220px" class="input" required type="date" id="dob" name="dob" size="20"/>
+                </td>
+            </tr>
+            <tr>
+                <td><input  type="checkbox" id="agree" name="agree" size="20"/>
+                </td>
+                <td><label for="checkbox">
+                    Accept Terms & Conditions.
+                </label>
+                </td>
+            </tr>
+            <tr>
+                <td><button class="buttons" type="submit" align="center" >
+                    Submit
+                    </button> 
+                </td>
+            </tr>
+        </table>
+    </form>    
+    </div>
+    <div class="entry">
+        <h2 class="subHead">Entries</h2>
+        <div id="tableDiv"></div>
+    </div>
+    <script>
+        let form = document.getElementById("form");
+        const retriveEntries = () => {
+            let entries = localStorage.getItem("userEntry");
+            if (entries) {
+                entries = JSON.parse(entries);
+            } else {
+                entries = [];
+            }
+            return entries;
+        };
+        let Entries = retriveEntries();
+        const displayEntries = () => {
+            const entries = retriveEntries();
+            const rows = entries.map((entry) => {
+                const name = `<td class="td">${entry.name}</td>`;
+                const email = `<td class="td">${entry.email}</td>`;
+                const password = `<td class="td">${entry.password}</td>`;
+                const dob = `<td class="td">${entry.dob}</td>`;
+                const accseptConditions = `<td class="td">${entry.accseptConditions}</td>`;
+                const row = `<tr>${name} ${email} ${password} ${dob} ${accseptConditions}</tr>`;
+                return row;
+            }).join("\n");
+            let tableDiv = document.getElementById("tableDiv");
+            tableDiv.innerHTML = `<table class="table" border="2">
+                <tr>
+                    <th class="th">Name</th>
+                    <th class="th">Email</th>
+                    <th class="th">Password</th>
+                    <th class="th">Dob</th>
+                    <th class="th">Accepted terms?</th>
+                </tr>
+                ${rows}
+            </table>`; 
+        };
+        const saveUserFrom = (event) => {
+            event.preventDefault();
+            let name = document.getElementById("name").value;
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+            let dob = document.getElementById("dob").value;
+            let accseptConditions = document.getElementById("agree").checked;
+            let entry_obj = {
+                name,
+                email,
+                password,
+                dob,
+                accseptConditions,
+            };
+            Entries.push(entry_obj);
+            localStorage.setItem("userEntry", JSON.stringify(Entries));
+            displayEntries();
+        };
+        form.addEventListener("submit", saveUserFrom);
+        displayEntries();
+
+        const dob = document.getElementById("dob");
+        dob.addEventListener('input', validate(dob));
+        const submit = document.getElementById("submit");
+        submit.addEventListener('click', validate(dob));
+        function validate(element) {
+            var userinput = document.getElementById("dob").value;
+            var dob = new Date(userinput);
+            var month_diff = Date.now() - dob.getTime();
+            var age_dt = new Date(month_diff); 
+            var year = age_dt.getUTCFullYear();
+            var age = Math.abs(year - 1970);
+            if(18<age>55){
+                element.setCustomValidity('');
+            }else{
+                element.setCustomValidity("age should be between 18 and 55");
+                element.reportValidity();
+            }
+        }    
+        
+
+        const email = document.getElementById("email");
+        email.addEventListener("input", () => validate(email));
+        function validate(ele) {
+            if (ele.validity.typeMismatch) {
+                ele.setCustomValidity("The Email is not in the right format!!!");
+                ele.reportValidity();
+            } else {
+                ele.setCustomValidity("");
+            }
+        }
+        
+            
+    </script>
+
+</body>
+</html>
